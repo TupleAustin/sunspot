@@ -13,30 +13,101 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-Solr example configuration
+Solr server
+------------
+
+This directory contains an instance of the Jetty Servlet container setup to 
+run Solr.
+
+To run Solr:
+
+  cd $SOLR_INSTALL
+  bin/solr start
+
+where $SOLR_INSTALL is the location where you extracted the Solr installation bundle.
+
+Server directory layout
+-----------------------
+
+server/contexts
+
+  This directory contains the Jetty Web application deployment descriptor for the Solr Web app.
+
+server/etc
+
+  Jetty configuration and example SSL keystore
+
+server/lib
+
+  Jetty and other 3rd party libraries
+
+server/logs
+
+  Solr log files
+
+server/resources
+
+  Contains configuration files, such as the Log4j configuration (log4j.properties) for configuring Solr loggers.
+
+server/scripts/cloud-scripts
+
+  Command-line utility for working with ZooKeeper when running in SolrCloud mode, see zkcli.sh / .cmd for
+  usage information.
+
+server/solr
+
+  Default solr.solr.home directory where Solr will create core directories; must contain solr.xml
+
+server/solr/configsets
+
+  Directories containing different configuration options for running Solr.
+
+    basic_configs               : Bare minimum configuration settings needed to run Solr.
+
+    data_driven_schema_configs  : Field-guessing and managed schema mode; use this configuration if you want
+                                  to start indexing data in Solr without having to design a schema upfront.
+                                  You can use the REST API to manage your schema as you refine your index
+                                  requirements.
+
+    sample_techproducts_configs : Comprehensive example configuration that demonstrates many of the powerful
+                                  features of Solr, based on the use case of building a search solution for
+                                  tech products.
+
+server/solr-webapp
+
+  Jetty will extract the solr.war into this directory at runtime.
+
+server/webapps
+
+  Contains the solr.war file.
+
+
+Notes About Solr Examples
 --------------------------
 
-To run this example configuration, use 
+* SolrHome *
 
-  java -jar start.jar
+By default, start.jar starts Solr in Jetty using the default Solr Home
+directory of "./solr/" (relative to the working directory of the servlet 
+container).
 
-in this directory, and when Solr is started connect to 
+* References to Jar Files Outside This Directory *
 
-  http://localhost:8983/solr/admin/
+Various example SolrHome dirs contained in this directory may use "<lib>"
+statements in the solrconfig.xml file to reference plugin jars outside of 
+this directory for loading "contrib" plugins via relative paths.  
 
-To add documents to the index, use the post.sh script in the exampledocs
-subdirectory (while Solr is running), for example:
+If you make a copy of this example server and wish to use the 
+ExtractingRequestHandler (SolrCell), DataImportHandler (DIH), UIMA, the 
+clustering component, or any other modules in "contrib", you will need to 
+copy the required jars or update the paths to those jars in your 
+solrconfig.xml.
 
-  cd exampledocs
-  ./post.sh *.xml
+* Logging *
 
-See also README.txt in the solr subdirectory, and check
-http://wiki.apache.org/solr/SolrResources for a list of tutorials and
-introductory articles.
-
-NOTE: This Solr example server references SolrCell jars outside of the server
-directory with <lib> statements in the solrconfig.xml.  If you make a copy of
-this example server and wish to use the ExtractingRequestHandler (SolrCell),
-you will need to copy the required jars into solr/lib or update the paths to
-the jars in your solrconfig.xml.
+By default, Jetty & Solr will log to the console a logs/solr.log. This can be convenient when 
+first getting started, but eventually you will want to log just to a file. To 
+configure logging, edit the log4j.properties file in "resources".
+ 
+It is also possible to setup log4j or other popular logging frameworks.
 
